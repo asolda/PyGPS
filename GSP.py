@@ -63,6 +63,7 @@ def best_response(name, adv_value, slot_ctrs, history):
     else:
         last_slot=sort_slots.index(adv_slots[name])
         
+    utility = -1
     #The best response bot makes the following steps:
     #1) Evaluate for each slot, how much the advertiser would pay if
     #   - he changes his bid so that that slot is assigned to him
@@ -79,9 +80,21 @@ def best_response(name, adv_value, slot_ctrs, history):
             tmp_pay = sort_bids[i+1] #then, I must pay for that slot the bid of the next advertiser
         
     #2) Evaluate for each slot, which one gives to the advertiser the largest utility
-    #ToDo
+        new_utility = slot_ctrs[sort_slots[i]]*(adv_value-tmp_pay)
+        
+        if new_utility > utility:
+            utility = new_utility
+            preferred_slot = i
+            payment = tmp_pay
     
     #3) Evaluate which bid to choose among the ones that allows the advertiser to being assigned the slot selected at the previous step
-    #ToDo
+    if preferred_slot == -1:
+        # TIE-BREAKING RULE: I choose the largest bid smaller than my value for which I lose
+        return min(adv_value, sort_bids[len(sort_slots)])
     
-    return best
+    if preferred_slot == 0:
+        # TIE-BREAKING RULE: I choose the bid that is exactly in the middle between my own value and the next bid
+        return float(adv_value+payment)/2
+    
+    #TIE-BREAKING RULE: If I like slot j, I choose the bid b_i for which I am indifferent from taking j at computed price or taking j-1 at price b_i
+    return (adv_value - float(slot_ctrs[sort_slots[preferred_slot]])/slot_ctrs[sort_slots[preferred_slot-1]] * (adv_value - payment))
