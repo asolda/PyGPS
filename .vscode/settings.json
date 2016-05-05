@@ -1,4 +1,5 @@
 // Inserire le impostazioni in questo file per sovrascrivere quelle utente e predefinite.
 {
-    "editor.wrappingColumn": 80
+    "editor.wrappingColumn": 80,
+    "editor.renderWhitespace": true
 }
